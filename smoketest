@@ -2,7 +2,7 @@
 #
 # A quick smoke-test of Lambkin.
 #
-# Creates, publishes runs and crons a basic function in Python and another
+# Creates, publishes, runs and crons a basic function in Python and another
 # in Node.js.
 
 set -eou pipefail
