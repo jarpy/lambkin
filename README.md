@@ -83,3 +83,9 @@ $EDITOR functions/cool-func/Makefile
 ``` bash
 ./lambkin unpublish cool-func
 ```
+
+Dependencies - pip and npm
+--------------------------
+Each function you create gets a Makefile at `functions/some-function/Makefile`.
+This is the best place to install any dependencies. Examples for installing pip
+and npm packages are provided in the Makefile.
