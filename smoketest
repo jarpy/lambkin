@@ -2,7 +2,8 @@
 #
 # A quick smoke-test of Lambkin.
 #
-# Creates, publishes and runs a basic function in Python and another in Node.js.
+# Creates, publishes runs and crons a basic function in Python and another
+# in Node.js.
 
 set -eou pipefail
 
@@ -13,6 +14,7 @@ for runtime in python node; do
   ./lambkin create ${func} $([[ ${runtime} == python ]] || echo --runtime=${runtime})
   ./lambkin publish ${func} --description="${runtime} smoke test function" | jq '{runtime: .Runtime}'
   ./lambkin run ${func} | jq .
+  ./lambkin cron ${func} --rate '5 minutes' | jq '{status: .ResponseMetadata.HTTPStatusCode}'
   ./lambkin unpublish ${func}
   rm -rf functions/${func}
   echo

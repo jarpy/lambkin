@@ -78,6 +78,12 @@ $EDITOR functions/cool-func/Makefile
 ./lambkin run cool-func
 ```
 
+#### Schedule the function to run at regular intervals
+
+``` bash
+./lambkin cron cool-func --rate='10 minutes'
+```
+
 #### Remove the function from Lambda, but keep it locally.
 
 ``` bash
