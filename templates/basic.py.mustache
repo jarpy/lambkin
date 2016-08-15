@@ -1,0 +1,36 @@
+# {{function_name}}.py: An AWS Lambda function.
+#
+# To run this function in Lambda, you need to bundle all the libraries you use.
+# Even something as mundane as:
+#   import requests
+# won't work by default.
+#
+# To install a library (like "requests") into your Lambda function:
+#   pip install requests -t functions/{{function_name}}
+#
+# or just:
+#   pip install requests -t .
+#
+# if you are already in your function's directory.
+#
+# The files installed by pip are all "gitignored" by default, so they don't
+# get commited. In fact, almost everything is ignored, so if you want to add
+# and commit more than just your script, you'll need to bless them in the
+# '.gitignore' file in this function's directory.
+#
+#
+# Here is the entry point for Lambda. Execution starts here when an
+# event triggers us to run.
+#
+# Lambda passes us two objects, the event that triggered us, and a 'context'
+# object for this execution. For details see:
+#   http://docs.aws.amazon.com/lambda/latest/dg/python-programming-model-handler-types.html
+def handler(event, context):
+    # To log to Cloudwatch, just:
+    print "anything you like."
+
+    optional_return_value = {
+        "moon_landing": True,
+        "color": "#3a3a3a"
+    }
+    return optional_return_value  # which often becomes a JSON response.

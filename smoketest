@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# A quick smoke-test of Lambkin.
+#
+# Creates, publishes and runs a basic function in Python and another in Node.js.
+
+set -eou pipefail
+
+for runtime in python node; do
+  func=${runtime}-smoketest
+  ./lambkin list-published | grep -q ${func} && ./lambkin unpublish ${func}
+  rm -rf functions/${func}
+  ./lambkin create ${func} $([[ ${runtime} == python ]] || echo --runtime=${runtime})
+  ./lambkin publish ${func} --description="${runtime} smoke test function" | jq '{runtime: .Runtime}'
+  ./lambkin run ${func} | jq .
+  ./lambkin unpublish ${func}
+  rm -rf functions/${func}
+  echo
+done
