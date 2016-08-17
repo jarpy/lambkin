@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name = 'lambkin',
     packages = ['lambkin'],
-    version = '0.0.1',
+    version = '0.0.3',
     description = 'CLI tool for managing functions in AWS Lambda.',
     author='Toby McLaughlin',
     author_email='toby@jarpy.net',

@@ -55,14 +55,14 @@ def handler(event, context):
     'makefile':
 """
 {{function_name}}:
-        @echo "make" called for {{function_name}}
+	@echo "make" called for {{function_name}}
 
-        # Install some Python libraries.
-        # pip install requests -t .
-        # pip install elasticsearch -t .
+	# Install some Python libraries.
+	# pip install requests
+	# pip install elasticsearch
 
-        # Or maybe we're hacking NodeJS. Here's how to bundle npm packages.
-        # npm install --prefix=. aws-sdk
+	# Or maybe we're hacking NodeJS. Here's how to bundle npm packages.
+	# npm install --prefix=. aws-sdk
 """,
 
     'nodejs':

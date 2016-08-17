@@ -15,6 +15,8 @@ from lambkin.runtime import get_sane_runtime, get_file_extension_for_runtime
 from lambkin.runtime import get_language_name_for_runtime
 from lambkin.template import render_template
 from lambkin.ux import say
+from lambkin.virtualenv import create_virtualenv, run_in_virtualenv
+from lambkin.zip import zip_function
 from shutil import make_archive
 from subprocess import check_output, CalledProcessError, STDOUT
 
@@ -41,8 +43,10 @@ def create(function, runtime):
     template_name = get_language_name_for_runtime(runtime)
     render_template(template_name, function,
                          output_filename="%s.%s" % (function, ext))
-    render_template('makefile', function)
+    render_template('makefile', function, output_filename='Makefile')
     render_template('gitignore', function, output_filename='.gitignore')
+    if get_language_name_for_runtime(runtime) == 'python':
+        create_virtualenv(function)
 
     Metadata(function).write(runtime=runtime)
 
@@ -64,15 +68,20 @@ def list_published():
 @click.command(help="Run 'make' for a function.")
 @click.argument('function')
 def make(function):
-    make_invocation = ['make', '-C', os.path.join('functions', function)]
-    try:
-        make_log = check_output(make_invocation, stderr=STDOUT)
-        for line in make_log.rstrip().split("\n"):
-            say(line)
-    except CalledProcessError as e:
-        for line in e.output.rstrip().split("\n"):
-            say(line)
-        raise Fatal('make failure')
+    runtime = Metadata(function).read()['runtime']
+    language = get_language_name_for_runtime(runtime)
+    if language == 'python':
+        print run_in_virtualenv(function, 'make -C %s' % function)
+    else:
+        make_invocation = ['make', '-C', function]
+        try:
+            make_log = check_output(make_invocation, stderr=STDOUT)
+            for line in make_log.rstrip().split("\n"):
+                say(line)
+        except CalledProcessError as e:
+            for line in e.output.rstrip().split("\n"):
+                say(line)
+            raise Fatal('make failure')
 
 
 @click.command(help='Publish a function to Lambda.')
@@ -86,8 +95,8 @@ def publish(function, description, timeout, role):
     runtime = metadata['runtime']
     code_dir = os.path.join(function)
 
-    zip_file = make_archive('/tmp/lambda-publish', 'zip', code_dir)
-    zip_data = open(zip_file).read()
+    # zip_file = make_archive('/tmp/lambda-publish', 'zip', code_dir)
+    zip_data = open(zip_function(function)).read()
 
     if function in get_published_function_names():
         # Push the latest code to the existing function in Lambda.
