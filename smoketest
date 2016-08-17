@@ -9,13 +9,13 @@ set -eou pipefail
 
 for runtime in python node; do
   func=${runtime}-smoketest
-  ./lambkin list-published | grep -q ${func} && ./lambkin unpublish ${func}
-  rm -rf functions/${func}
-  ./lambkin create ${func} $([[ ${runtime} == python ]] || echo --runtime=${runtime})
-  ./lambkin publish ${func} --description="${runtime} smoke test function" | jq '{runtime: .Runtime}'
-  ./lambkin run ${func} | jq .
-  ./lambkin cron ${func} --rate '5 minutes' | jq '{status: .ResponseMetadata.HTTPStatusCode}'
-  ./lambkin unpublish ${func}
-  rm -rf functions/${func}
+  lambkin list-published | grep -q ${func} && ./lambkin unpublish ${func}
+  rm -rf ${func}
+  lambkin create ${func} $([[ ${runtime} == python ]] || echo --runtime=${runtime})
+  lambkin publish ${func} --description="${runtime} smoke test function" | jq '{runtime: .Runtime}'
+  lambkin run ${func} | jq .
+  lambkin cron ${func} --rate '5 minutes' | jq '{status: .ResponseMetadata.HTTPStatusCode}'
+  lambkin unpublish ${func}
+  rm -rf ${func}
   echo
 done

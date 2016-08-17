@@ -4,7 +4,7 @@ from os.path import join
 class Metadata():
     def __init__(self, function_name):
         self.function_name = function_name
-        self.metadata_file = join('functions', function_name, 'metadata.json')
+        self.metadata_file = join(function_name, 'metadata.json')
 
     def write(self, **metadata):
         """Write keyword arguments, in JSON format, to metadata.json."""

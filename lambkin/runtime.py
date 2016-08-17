@@ -9,6 +9,13 @@ def get_file_extension_for_runtime(runtime):
         return 'js'
 
 
+def get_language_name_for_runtime(runtime):
+    if runtime.startswith('python'):
+        return 'python'
+    elif runtime.startswith('node'):
+        return 'nodejs'
+
+
 def get_sane_runtime(runtime):
     """Make a runtime string that Lambda will accept."""
 

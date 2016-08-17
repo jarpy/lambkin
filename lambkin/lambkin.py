@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
 
 import boto3
 import click
@@ -6,13 +7,14 @@ import json
 import os
 from base64 import b64decode
 from botocore.exceptions import ClientError
-from lib.aws import get_account_id, get_role_arn, get_event_rule_arn
-from lib.aws import get_function_arn
-from lib.metadata import Metadata
-from lib.exceptions import Fatal
-from lib.runtime import get_sane_runtime, get_file_extension_for_runtime
-from lib.template import render_template
-from lib.ux import say
+from lambkin.aws import get_account_id, get_role_arn, get_event_rule_arn
+from lambkin.aws import get_function_arn
+from lambkin.metadata import Metadata
+from lambkin.exceptions import Fatal
+from lambkin.runtime import get_sane_runtime, get_file_extension_for_runtime
+from lambkin.runtime import get_language_name_for_runtime
+from lambkin.template import render_template
+from lambkin.ux import say
 from shutil import make_archive
 from subprocess import check_output, CalledProcessError, STDOUT
 
@@ -27,7 +29,7 @@ def create(function, runtime):
     runtime = get_sane_runtime(runtime)
 
     ext = get_file_extension_for_runtime(runtime)
-    func_dir = 'functions/%s' % function                # "functions/funky"
+    func_dir = function                # "functions/funky"
     func_file = '%s/%s.%s' % (func_dir, function, ext)  # "functions/funky/funky.py"
 
     for path in (func_dir, func_file):
@@ -36,10 +38,10 @@ def create(function, runtime):
 
     os.mkdir(func_dir)
 
-    template = 'basic.%s' % ext
-    render_template(template, function,
+    template_name = get_language_name_for_runtime(runtime)
+    render_template(template_name, function,
                          output_filename="%s.%s" % (function, ext))
-    render_template('Makefile', function)
+    render_template('makefile', function)
     render_template('gitignore', function, output_filename='.gitignore')
 
     Metadata(function).write(runtime=runtime)
@@ -82,7 +84,7 @@ def make(function):
 def publish(function, description, timeout, role):
     metadata = Metadata(function).read()
     runtime = metadata['runtime']
-    code_dir = os.path.join('functions', function)
+    code_dir = os.path.join(function)
 
     zip_file = make_archive('/tmp/lambda-publish', 'zip', code_dir)
     zip_data = open(zip_file).read()
@@ -174,7 +176,8 @@ def cron(function, rate):
 
     print json.dumps(response, sort_keys=True, indent=2)
 
-if __name__ == '__main__':
+
+def main():
     @click.group()
     def cli():
         pass
@@ -183,3 +186,7 @@ if __name__ == '__main__':
         cli.add_command(cmd)
 
     cli()
+
+
+if __name__ == '__main__':
+    main()

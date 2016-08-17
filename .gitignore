@@ -1,2 +1,7 @@
 /venv
 *.pyc
+/lambkin.egg-info
+/*.tar.gz
+/*.whl
+/build
+/dist
