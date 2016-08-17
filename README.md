@@ -10,7 +10,7 @@ Quick Start
 ===========
 
 Prerequisites
------------
+-------------
 * A valid `~/.aws/config` file. eg.
 ```
 [default]
@@ -23,8 +23,11 @@ aws_access_key_id = AKIAUAVOHGHOOWEEYIED
 aws_secret_access_key = 90kX2Y2bykTH9CpQFHCzN92tukYf26
 ```
 
-* `pip install lambkin`
+* A working `virtualenv` command if you will be writing Lambda functions in Python.
 
+Installing
+----------
+* `pip install lambkin`
 
 Examples
 --------
