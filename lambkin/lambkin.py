@@ -147,11 +147,11 @@ def unpublish(function):
     say('%s unpublished' % (function))
 
 
-@click.command(help='Schedule a function to run regularly, like "cron".')
+@click.command(help='Schedule a function to run regularly.')
 @click.argument('function')
 @click.option('--rate', required=True,
               help='Execution rate. Like "6 minutes", or "1 day".')
-def cron(function, rate):
+def schedule(function, rate):
     events = boto3.client('events')
 
     try:
@@ -192,7 +192,7 @@ def main():
     def cli():
         pass
 
-    for cmd in [create, cron, list_published, make, publish, run, unpublish]:
+    for cmd in [create, list_published, make, publish, run, schedule, unpublish]:
         cli.add_command(cmd)
 
     cli()
