@@ -41,7 +41,7 @@ def create(function, runtime):
 
     template_name = get_language_name_for_runtime(runtime)
     render_template(template_name, function,
-                         output_filename="%s.%s" % (function, ext))
+                    output_filename="%s.%s" % (function, ext))
     render_template('gitignore', function, output_filename='.gitignore')
     if get_language_name_for_runtime(runtime) == 'python':
         create_virtualenv(function)
@@ -62,8 +62,8 @@ def get_published_function_names():
 @click.command(name='list-published',
                help='List published Lambda functions.')
 def list_published():
-   for f in lmbda.list_functions()['Functions']:
-       print f['FunctionName']
+    for f in lmbda.list_functions()['Functions']:
+        print f['FunctionName']
 
 
 @click.command(help="Run 'make' for a function.")

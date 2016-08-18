@@ -1,6 +1,7 @@
 import json
 from os.path import join
 
+
 class Metadata():
     def __init__(self, function_name):
         self.function_name = function_name

@@ -1,5 +1,6 @@
 from click import echo
 
+
 def say(message):
     """Write an info message to STDERR.
 

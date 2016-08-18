@@ -3,6 +3,7 @@ import zipfile
 
 # REF: http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
 
+
 def zip_function(function_name):
     zip_file_path = '/tmp/lambda-publish-%s.zip' % function_name
     zip_file = zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED)

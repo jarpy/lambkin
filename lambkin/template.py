@@ -2,6 +2,7 @@ import pystache
 from os.path import join
 from textwrap import dedent
 
+
 def render_template(template_name, function_name, output_filename=None):
     if not output_filename:
         output_filename = template_name

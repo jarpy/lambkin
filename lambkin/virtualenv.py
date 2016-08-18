@@ -10,4 +10,4 @@ def create_virtualenv(function_name):
 
 def run_in_virtualenv(function_name, shell_command):
     return check_output('. %s/venv/bin/activate && %s' %
-                 (function_name, shell_command), shell=True)
+                        (function_name, shell_command), shell=True)

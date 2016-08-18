@@ -1,5 +1,6 @@
 from exceptions import Fatal
 
+
 def get_file_extension_for_runtime(runtime):
     """Return the correct file extension for a language runtime."""
     runtime = get_sane_runtime(runtime)

@@ -1,5 +1,6 @@
 import boto3
 
+
 def get_region():
     """Return the (default) AWS region."""
     return boto3.session.Session().region_name
