@@ -1,10 +1,17 @@
 from setuptools import setup
 
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except ImportError:
+    long_description = open('README.md').read()
+
 setup(
-    name = 'lambkin',
-    packages = ['lambkin'],
-    version = '0.0.3',
-    description = 'CLI tool for managing functions in AWS Lambda.',
+    name='lambkin',
+    packages=['lambkin'],
+    version='0.0.6',
+    description='CLI tool for managing functions in AWS Lambda.',
+    long_description=long_description,
     author='Toby McLaughlin',
     author_email='toby@jarpy.net',
     url='https://github.com/jarpy/lambkin',
@@ -23,7 +30,7 @@ setup(
     },
     install_requires=[
         'boto3',
-        'click>5,<7',
+        'click>=6,<7',
         'pystache'
     ]
 

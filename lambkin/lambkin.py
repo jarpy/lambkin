@@ -7,7 +7,7 @@ import json
 import os
 from base64 import b64decode
 from botocore.exceptions import ClientError
-from lambkin.aws import get_account_id, get_role_arn, get_event_rule_arn
+from lambkin.aws import get_role_arn, get_event_rule_arn
 from lambkin.aws import get_function_arn
 from lambkin.metadata import Metadata
 from lambkin.exceptions import Fatal
@@ -17,7 +17,6 @@ from lambkin.template import render_template
 from lambkin.ux import say
 from lambkin.virtualenv import create_virtualenv, run_in_virtualenv
 from lambkin.zip import zip_function
-from shutil import make_archive
 from subprocess import check_output, CalledProcessError, STDOUT
 
 
@@ -43,10 +42,12 @@ def create(function, runtime):
     template_name = get_language_name_for_runtime(runtime)
     render_template(template_name, function,
                          output_filename="%s.%s" % (function, ext))
-    render_template('makefile', function, output_filename='Makefile')
     render_template('gitignore', function, output_filename='.gitignore')
     if get_language_name_for_runtime(runtime) == 'python':
         create_virtualenv(function)
+        render_template('requirements', function, output_filename='requirements.txt')
+    else:
+        render_template('makefile', function, output_filename='Makefile')
 
     Metadata(function).write(runtime=runtime)
 
@@ -71,7 +72,8 @@ def make(function):
     runtime = Metadata(function).read()['runtime']
     language = get_language_name_for_runtime(runtime)
     if language == 'python':
-        print run_in_virtualenv(function, 'make -C %s' % function)
+        req_file = os.path.join(function, 'requirements.txt')
+        print run_in_virtualenv(function, 'pip install -r %s' % req_file)
     else:
         make_invocation = ['make', '-C', function]
         try:
@@ -93,7 +95,6 @@ def make(function):
 def publish(function, description, timeout, role):
     metadata = Metadata(function).read()
     runtime = metadata['runtime']
-    code_dir = os.path.join(function)
 
     # zip_file = make_archive('/tmp/lambda-publish', 'zip', code_dir)
     zip_data = open(zip_function(function)).read()

@@ -85,8 +85,9 @@ lambkin unpublish cool-func
 
 Dependencies - pip and npm
 --------------------------
-Each function you create gets a Makefile at `some-function/Makefile`.
-This is the best place to install any dependencies. Examples for installing pip
-and npm packages are provided in the Makefile.
+Python functions get a `requirements.txt` file where you can specify
+dependencies. They will be installed into your function's virtualenv by
+`lambkin make`.
 
-Nicer, more language-specific dependency management is planned for the future.
+For now, Node.js functions just get a Makefile at `some-function/Makefile`.
+Nicer, more Node-ish dependency management is planned for the future.

@@ -1,5 +1,4 @@
 import os
-import sys
 import zipfile
 
 # REF: http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
@@ -10,12 +9,17 @@ def zip_function(function_name):
 
     for root, dirs, files in os.walk(function_name):
         venv_dir = os.path.join(function_name, 'venv')
-        library_dir = os.path.join(venv_dir, 'lib', 'python2.7', 'site-packages')
+        site_dir = os.path.join(venv_dir, 'lib', 'python2.7', 'site-packages')
+        dist_dir = os.path.join(venv_dir, 'lib', 'python2.7', 'dist-packages')
         for f in files:
             path = os.path.join(root, f)
-            if root.startswith(library_dir):
+            if root.startswith(site_dir):
                 # Then strip the library dir, and put the file in the zip.
-                trimmed_path = path[len(library_dir):]
+                trimmed_path = path[len(site_dir):]
+                zip_file.write(path, trimmed_path)
+            elif root.startswith(dist_dir):
+                # Then strip the library dir, and put the file in the zip.
+                trimmed_path = path[len(dist_dir):]
                 zip_file.write(path, trimmed_path)
             elif root.startswith(venv_dir):
                 # Then it's other junk in the virtualenv that we don't want.
