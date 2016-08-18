@@ -49,8 +49,8 @@ templates = {
             print "anything you like."
 
             optional_return_value = {
-                "moon_landing": True,
-                "color": "#3a3a3a"
+                "hello": "World",
+                "from": "Python"
             }
 
             return optional_return_value  # which often becomes a JSON response.
@@ -71,8 +71,8 @@ templates = {
 
           // An abitrary object.
           result = {
-            "size": "large",
-            "with_cheese": true
+            "hello": "World",
+            "from": "Node.js"
           };
 
           // This example uses an NPM package. Look in the "Makefile" to see how to
