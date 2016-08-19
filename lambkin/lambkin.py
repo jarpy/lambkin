@@ -71,13 +71,15 @@ def list_published():
         print f['FunctionName']
 
 
-@click.command(help="Run 'make' for a function.")
-def make():
+@click.command(help="Run the build process for a function.")
+def build():
     runtime = metadata.read()['runtime']
     language = get_language_name_for_runtime(runtime)
     if language == 'python':
+        # Use virtualenv and pip
         print run_in_virtualenv('pip install -r requirements.txt')
     else:
+        # Fall back to a Makefile.
         try:
             make_log = check_output(['make'], stderr=STDOUT)
             for line in make_log.rstrip().split("\n"):
@@ -201,7 +203,7 @@ def main():
     def cli():
         pass
 
-    subcommands = [create, list_published, make, publish, run, schedule,
+    subcommands = [create, list_published, build, publish, run, schedule,
                    unpublish]
     for cmd in subcommands:
         cli.add_command(cmd)

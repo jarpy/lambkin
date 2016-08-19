@@ -9,16 +9,16 @@ set -xeou pipefail
 
 for runtime in python node; do
   func=${runtime}-smoketest
-  lambkin list-published | grep -q ${func} && lambkin unpublish ${func}
+  lambkin list-published | grep -q ${func} && lambkin unpublish --function=${func}
   rm -rf ${func}
   lambkin create ${func} $([[ ${runtime} == python ]] || echo --runtime=${runtime})
   cd ${func}
   echo 'requests' >> requirements.txt
-  lambkin make
+  lambkin build
   lambkin publish --description="${func} test."
   lambkin run | jq .
   lambkin schedule --rate '5 minutes' | jq '{status: .ResponseMetadata.HTTPStatusCode}'
-  lambkin unpublish ${func}
+  lambkin unpublish
   cd ..
   rm -rf ${func}
   echo

@@ -52,14 +52,14 @@ $EDITOR cool-func.js
 
 ``` bash
 $EDITOR requirements.txt
-lambkin make
+lambkin build
 ```
 
 ##### Install packages and dependencies for a Node.js function
 
 ``` bash
 $EDITOR Makefile
-lambkin make
+lambkin build
 ```
 
 ##### Bundle up your function (with libraries) and send it to Lambda
@@ -96,7 +96,7 @@ Dependencies - pip and npm
 --------------------------
 Python functions get a `requirements.txt` file where you can specify
 dependencies. They will be installed into your function's virtualenv by
-`lambkin make`.
+`lambkin build`.
 
 For now, Node.js functions just get a Makefile. Nicer, more Node-ish
 dependency management is planned for the future.
