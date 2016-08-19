@@ -8,6 +8,6 @@ def create_virtualenv(function_name):
     ])
 
 
-def run_in_virtualenv(function_name, shell_command):
-    return check_output('. %s/venv/bin/activate && %s' %
-                        (function_name, shell_command), shell=True)
+def run_in_virtualenv(command):
+    """Run a shell command with the current function's virtualenv active."""
+    return check_output('. venv/bin/activate && %s' % command, shell=True)

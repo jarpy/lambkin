@@ -5,3 +5,4 @@
 /*.whl
 /build
 /dist
+**.swp

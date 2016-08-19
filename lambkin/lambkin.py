@@ -9,14 +9,14 @@ from base64 import b64decode
 from botocore.exceptions import ClientError
 from lambkin.aws import get_role_arn, get_event_rule_arn
 from lambkin.aws import get_function_arn
-from lambkin.metadata import Metadata
 from lambkin.exceptions import Fatal
 from lambkin.runtime import get_sane_runtime, get_file_extension_for_runtime
 from lambkin.runtime import get_language_name_for_runtime
 from lambkin.template import render_template
 from lambkin.ux import say
 from lambkin.virtualenv import create_virtualenv, run_in_virtualenv
-from lambkin.zip import zip_function
+from lambkin.zip import create_zip
+import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
 
@@ -49,7 +49,12 @@ def create(function, runtime):
     else:
         render_template('makefile', function, output_filename='Makefile')
 
-    Metadata(function).write(runtime=runtime)
+    our_metadata = {
+        'function': function,
+        'runtime': runtime,
+        'language': get_language_name_for_runtime(runtime)
+    }
+    metadata.write(subdirectory=function, **our_metadata)
 
     say('%s created as %s' % (function, func_file))
 
@@ -67,17 +72,14 @@ def list_published():
 
 
 @click.command(help="Run 'make' for a function.")
-@click.argument('function')
-def make(function):
-    runtime = Metadata(function).read()['runtime']
+def make():
+    runtime = metadata.read()['runtime']
     language = get_language_name_for_runtime(runtime)
     if language == 'python':
-        req_file = os.path.join(function, 'requirements.txt')
-        print run_in_virtualenv(function, 'pip install -r %s' % req_file)
+        print run_in_virtualenv('pip install -r requirements.txt')
     else:
-        make_invocation = ['make', '-C', function]
         try:
-            make_log = check_output(make_invocation, stderr=STDOUT)
+            make_log = check_output(['make'], stderr=STDOUT)
             for line in make_log.rstrip().split("\n"):
                 say(line)
         except CalledProcessError as e:
@@ -87,17 +89,23 @@ def make(function):
 
 
 @click.command(help='Publish a function to Lambda.')
-@click.argument('function')
 @click.option('--description', help="Descriptive text in AWS Lamda.")
 @click.option('--timeout', type=click.IntRange(min=1, max=300),
               default=60, help="Maximum time the function can run, in seconds.")
 @click.option('--role', default='lambda-basic-execution')
-def publish(function, description, timeout, role):
-    metadata = Metadata(function).read()
-    runtime = metadata['runtime']
+def publish(description, timeout, role):
+    runtime = metadata.read()['runtime']
+    function = metadata.read()['function']
+    if description:
+        metadata.update(description=description)
+    else:
+        try:
+            description = metadata.read()['description']
+        except KeyError:
+            raise Fatal('Please provide a description with "--description"')
 
     # zip_file = make_archive('/tmp/lambda-publish', 'zip', code_dir)
-    zip_data = open(zip_function(function)).read()
+    zip_data = open(create_zip()).read()
 
     if function in get_published_function_names():
         # Push the latest code to the existing function in Lambda.
@@ -107,17 +115,12 @@ def publish(function, description, timeout, role):
             Publish=True)
 
         # Update any settings for the function too.
-        if not description:  # then keep the existing description.
-            description = update_code_response['Description']
         final_response = lmbda.update_function_configuration(
             FunctionName=function,
             Description=description,
             Timeout=timeout)
         say('%s updated in Lambda' % function)
     else:  # we need to explictly create the function in AWS.
-        if not description:
-            raise Fatal('Please provide a description with "--description"')
-
         final_response = lmbda.create_function(
             FunctionName=function,
             Description=description,
@@ -131,8 +134,10 @@ def publish(function, description, timeout, role):
 
 
 @click.command(help='Run a published function.')
-@click.argument('function')
+@click.option('--function', help="Defaults to the function in the current dir.")
 def run(function):
+    if not function:
+        function = metadata.read()['function']
     result = lmbda.invoke(FunctionName=function, LogType='Tail')
     log = b64decode(result['LogResult']).rstrip().split("\n")
     for line in log:
@@ -141,17 +146,21 @@ def run(function):
 
 
 @click.command(help='Remove a function from Lambda.')
-@click.argument('function')
+@click.option('--function', help="Defaults to the function in the current dir.")
 def unpublish(function):
+    if not function:
+        function = metadata.read()['function']
     lmbda.delete_function(FunctionName=function)
     say('%s unpublished' % (function))
 
 
 @click.command(help='Schedule a function to run regularly.')
-@click.argument('function')
+@click.option('--function', help="Defaults to the function in the current dir.")
 @click.option('--rate', required=True,
               help='Execution rate. Like "6 minutes", or "1 day".')
 def schedule(function, rate):
+    if not function:
+        function = metadata.read()['function']
     events = boto3.client('events')
 
     try:
@@ -192,9 +201,10 @@ def main():
     def cli():
         pass
 
-    for cmd in [create, list_published, make, publish, run, schedule, unpublish]:
+    subcommands = [create, list_published, make, publish, run, schedule,
+                   unpublish]
+    for cmd in subcommands:
         cli.add_command(cmd)
-
     cli()
 
 

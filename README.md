@@ -1,6 +1,6 @@
 Lambkin
 =======
-Lambkin is CLI tool for generating and managing simple functions in AWS Lambda.
+Lambkin is CLI tool for generating and managing simple in AWS Lambda.
 
 Supporting Node.js and Python, Lambkin generates skeleton functions, provides
 lightweight help for managing dependencies, and does its best to hide the
@@ -32,55 +32,64 @@ Installing
 Examples
 --------
 
-#### Create a new Python function from a basic template
+##### Create a new Python function from a basic template
 
 ``` bash
 lambkin create cool-func
-$EDITOR cool-func/cool-func.py
+cd cool-func
+$EDITOR cool-func.py
 ```
 
-#### ...or a maybe you prefer Node.js
+##### ...or a maybe you prefer Node.js
 
 ``` bash
 lambkin create cool-func --runtime=nodejs
-$EDITOR cool-func/cool-func.js
+cd cool-func
+$EDITOR cool-func.js
 ```
 
-#### Install packages and dependencies for your function
+##### Install packages and dependencies for a Python function
 
 ``` bash
-$EDITOR cool-func/Makefile
-lambkin make cool-func
+$EDITOR requirements.txt
+lambkin make
 ```
 
-#### Bundle up your function (with libraries) and send it to Lambda
+##### Install packages and dependencies for a Node.js function
 
 ``` bash
-lambkin publish cool-func --description 'The best function ever.'
+$EDITOR Makefile
+lambkin make
 ```
 
-#### Increase the timeout for a long-running function
+##### Bundle up your function (with libraries) and send it to Lambda
 
 ``` bash
-lambkin publish cool-func --description 'Slow' --timeout=300
+lambkin publish --description 'The best function ever.'
 ```
 
-#### Invoke the published function, right now!
+##### Increase the timeout for a long-running function
 
 ``` bash
-lambkin run cool-func
+lambkin publish --description 'Slow' --timeout=300
 ```
 
-#### Schedule the function to run at regular intervals
+##### Invoke the published function, right now!
 
 ``` bash
-lambkin schedule cool-func --rate='10 minutes'
+lambkin run
 ```
 
-#### Remove the function from Lambda, but keep it locally.
+##### Schedule the function to run at regular intervals
 
 ``` bash
-lambkin unpublish cool-func
+lambkin schedule --rate='10 minutes'
+```
+
+##### Remove the function from Lambda, but keep it locally
+
+``` bash
+lambkin unpublish
 ```
 
 Dependencies - pip and npm
@@ -89,5 +98,5 @@ Python functions get a `requirements.txt` file where you can specify
 dependencies. They will be installed into your function's virtualenv by
 `lambkin make`.
 
-For now, Node.js functions just get a Makefile at `some-function/Makefile`.
-Nicer, more Node-ish dependency management is planned for the future.
+For now, Node.js functions just get a Makefile. Nicer, more Node-ish
+dependency management is planned for the future.
