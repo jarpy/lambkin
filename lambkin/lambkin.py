@@ -111,7 +111,6 @@ def publish(description, timeout, role):
         except KeyError:
             raise Fatal('Please provide a description with "--description"')
 
-    # zip_file = make_archive('/tmp/lambda-publish', 'zip', code_dir)
     zip_data = open(create_zip()).read()
 
     if function in get_published_function_names():

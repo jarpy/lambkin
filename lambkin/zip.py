@@ -9,15 +9,17 @@ import lambkin.metadata as metadata
 
 def create_zip():
     function = metadata.read()['function']
-    zip_file_path = '/tmp/lambda-publish-%s.zip' % function
+    zip_file_path = '/tmp/lambkin-publish-%s.zip' % function
     zip_file = zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED)
 
     for root, dirs, files in os.walk('.'):
-        site_dir = os.path.join('venv', 'lib', 'python2.7', 'site-packages')
-        dist_dir = os.path.join('venv', 'lib', 'python2.7', 'dist-packages')
+        site_dir = os.path.join('.', 'venv', 'lib', 'python2.7', 'site-packages')
+        dist_dir = os.path.join('.', 'venv', 'lib', 'python2.7', 'dist-packages')
         for f in files:
             path = os.path.join(root, f)
-            if root.startswith(site_dir):
+            if path.endswith('.pyc'):
+                pass
+            elif root.startswith(site_dir):
                 # Then strip the library dir, and put the file in the zip.
                 trimmed_path = path[len(site_dir):]
                 zip_file.write(path, trimmed_path)
@@ -25,8 +27,8 @@ def create_zip():
                 # Then strip the library dir, and put the file in the zip.
                 trimmed_path = path[len(dist_dir):]
                 zip_file.write(path, trimmed_path)
-            elif root.startswith('venv'):
-                # Then it's other junk in the virtualenv that we don't want.
+            elif root.startswith('./venv') or root.startswith('./.git'):
+                # Then it's other junk that we don't want.
                 pass
             else:
                 # Not sure what this is. The function author probably put
