@@ -5,6 +5,8 @@ import boto3
 import click
 import json
 import os
+import platform
+import sys
 from base64 import b64decode
 from botocore.exceptions import ClientError
 from lambkin.aws import get_role_arn, get_event_rule_arn
@@ -199,6 +201,10 @@ def schedule(function, rate):
 
 
 def main():
+    if platform.system() == 'Windows':
+        print("Lambkin doesn't run on Windows yet. Sorry.")
+        sys.exit(1)
+
     @click.group()
     def cli():
         pass
