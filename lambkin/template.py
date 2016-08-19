@@ -24,12 +24,9 @@ templates = {
         # won't work by default.
         #
         # To install a library (like "requests") into your Lambda function, edit
-        # the Makefile in your function's directory, then run:
+        # the requirements.txt in your function's directory, then run:
         #
-        #  lambkin make {{function_name}}
-        #
-        # from the top-level lambkin directory. The Makefile skeleton provided
-        # has examples for installing pip packages.
+        #  lambkin build
         #
         # The files installed by pip are all "gitignored" by default, so they don't
         # get commited. In fact, almost everything is ignored, so if you want to add
