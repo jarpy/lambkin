@@ -44,12 +44,13 @@ def create(function, runtime):
     template_name = get_language_name_for_runtime(runtime)
     render_template(template_name, function,
                     output_filename="%s.%s" % (function, ext))
-    render_template('gitignore', function, output_filename='.gitignore')
     if get_language_name_for_runtime(runtime) == 'python':
         create_virtualenv(function)
         render_template('requirements', function, output_filename='requirements.txt')
+        render_template('gitignore-python', function, output_filename='.gitignore')
     else:
         render_template('makefile', function, output_filename='Makefile')
+        render_template('gitignore', function, output_filename='.gitignore')
 
     our_metadata = {
         'function': function,
@@ -79,6 +80,8 @@ def build():
     language = get_language_name_for_runtime(runtime)
     if language == 'python':
         # Use virtualenv and pip
+        if not os.path.isfile('venv'):
+            create_virtualenv('.')
         print run_in_virtualenv('pip install -r requirements.txt')
     else:
         # Fall back to a Makefile.

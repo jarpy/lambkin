@@ -92,11 +92,15 @@ templates = {
         # so by default we will ignore _everything_ in the source dir:
         *
         # ...except for some things we want to commit:
-        !{{function_name}}.py
-        !{{function_name}}.js
+        !{{function_name}}.*
         !metadata.json
         !Makefile
         !.gitignore
+        """[1:]),
+
+    'gitignore-python': dedent(
+        """
+        /venv
         """[1:]),
 
     'requirements': dedent(
