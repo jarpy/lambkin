@@ -30,8 +30,8 @@ def create(function, runtime):
     runtime = get_sane_runtime(runtime)
 
     ext = get_file_extension_for_runtime(runtime)
-    func_dir = function                # "functions/funky"
-    func_file = '%s/%s.%s' % (func_dir, function, ext)  # "functions/funky/funky.py"
+    func_dir = function
+    func_file = os.path.join(func_dir, '%s.%s' % (function, ext))
 
     for path in (func_dir, func_file):
         if os.path.exists(path):
