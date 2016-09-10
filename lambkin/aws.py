@@ -27,7 +27,8 @@ def get_role_arn(role):
     get_role_arn('lambda-basic-execution')
     "arn:aws:iam::329487123:role/lambda-basic-execution"
     """
-    return "%s:role/%s" % (get_iam_arn_prefix(), role)
+    role = boto3.resource('iam').Role(role)
+    return role.arn
 
 
 def get_event_rule_arn(rule):
