@@ -21,7 +21,6 @@ from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
-DEFAULT_TIMEOUT = 60
 lmbda = boto3.client('lambda', region_name=get_region())
 
 
@@ -56,7 +55,7 @@ def create(function, runtime):
         'function': function,
         'runtime': runtime,
         'language': get_language_name_for_runtime(runtime),
-        'timeout': DEFAULT_TIMEOUT
+        'timeout': metadata.get('timeout')
     }
     metadata.write(subdirectory=function, **our_metadata)
 
@@ -99,11 +98,12 @@ def build():
 @click.command(help='Publish a function to Lambda.')
 @click.option('--description', help="Descriptive text in AWS Lamda.")
 @click.option('--timeout', type=click.IntRange(min=1, max=300),
-              help="Maximum time the function can run, in seconds. Default: %s." % DEFAULT_TIMEOUT)
-@click.option('--role', default='lambda-basic-execution')
+              help="Maximum time the function can run, in seconds.")
+@click.option('--role')
 def publish(description, timeout, role):
     runtime = metadata.get('runtime')
     function = metadata.get('function')
+
     if description:
         metadata.update(description=description)
     else:
@@ -112,12 +112,15 @@ def publish(description, timeout, role):
         except KeyError:
             raise ClickException('Please provide a description with "--description"')
 
-    if not timeout:
-        try:
-            timeout = metadata.get('timeout')
-        except KeyError:
-            timeout = DEFAULT_TIMEOUT
-    metadata.update(timeout=timeout)
+    if timeout:
+        metadata.update(timeout=timeout)
+    else:
+        timeout = metadata.get('timeout')
+
+    if role:
+        metadata.update(role=role)
+    else:
+        role = metadata.get('role')
 
     zip_data = open(create_zip()).read()
 
@@ -132,6 +135,7 @@ def publish(description, timeout, role):
         final_response = lmbda.update_function_configuration(
             FunctionName=function,
             Description=description,
+            Role=get_role_arn(role),
             Timeout=timeout)
         say('%s updated in Lambda' % function)
     else:  # we need to explictly create the function in AWS.

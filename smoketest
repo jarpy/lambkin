@@ -7,7 +7,9 @@
 
 set -xeou pipefail
 
-for runtime in python node; do
+: ${LAMBKIN_LANGS:=node python}
+
+for runtime in $LAMBKIN_LANGS; do
   func=lambkin-${runtime}-smoketest
   lambkin list-published | grep -q ${func} && lambkin unpublish --function=${func}
   rm -rf ${func}
@@ -27,6 +29,15 @@ for runtime in python node; do
   # ...and the change persists
   test $(lambkin publish | jq -r .Timeout) -eq 123
 
+  ## Role tests are commented out, since they require manual creation of the
+  ## test role to pass. Create a role called 'lambkin-smoketest' if you want
+  ## to run them.
+  ##
+  ## Role can be updated.
+  # lambkin publish --role=lambkin-smoketest | jq -r .Role | grep -q 'role/lambkin-smoketest$'
+  ## ...and the change persists
+  # lambkin publish | jq -r .Role | grep -q 'role/lambkin-smoketest$'
+
   # Scheduling supports both the "rate" and "cron" syntaxes.
   test $(lambkin schedule --rate '5 minutes' | jq -r .ResponseMetadata.HTTPStatusCode) -eq 200
   test $(lambkin schedule --cron '* * * * ? *' | jq -r .ResponseMetadata.HTTPStatusCode) -eq 200
@@ -35,3 +46,5 @@ for runtime in python node; do
   cd ..
   rm -rf ${func}
 done
+
+echo -e "\e[32m✔\e[0m PASS"

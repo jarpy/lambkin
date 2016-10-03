@@ -2,17 +2,31 @@ import json
 import os
 
 metadata_file = 'metadata.json'
+defaults = {
+    'timeout': 60,
+    'role': 'lambda-basic-execution'
+}
 
 
-def get(k):
-    """Return a single named property from the metadata."""
-    return read()[k]
+def get(key):
+    """Return a single named property from the metadata.
+
+    Defaults are returned for some properties if they are not stored in
+    the metadata.json file.
+    """
+    try:
+        return read()[key]
+    except KeyError:
+        return defaults[key]
 
 
 def read():
     """Read metadata for a function from disk (metadata.json)."""
-    with open(metadata_file) as f:
-        return json.load(f)
+    if os.path.exists(metadata_file):
+        with open(metadata_file) as f:
+            return json.load(f)
+    else:
+        return {}
 
 
 def write(subdirectory=None, **metadata):
