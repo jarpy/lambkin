@@ -21,6 +21,7 @@ from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
+DEFAULT_TIMEOUT = 60
 lmbda = boto3.client('lambda', region_name=get_region())
 
 
@@ -54,7 +55,8 @@ def create(function, runtime):
     our_metadata = {
         'function': function,
         'runtime': runtime,
-        'language': get_language_name_for_runtime(runtime)
+        'language': get_language_name_for_runtime(runtime),
+        'timeout': DEFAULT_TIMEOUT
     }
     metadata.write(subdirectory=function, **our_metadata)
 
@@ -97,7 +99,7 @@ def build():
 @click.command(help='Publish a function to Lambda.')
 @click.option('--description', help="Descriptive text in AWS Lamda.")
 @click.option('--timeout', type=click.IntRange(min=1, max=300),
-              default=60, help="Maximum time the function can run, in seconds.")
+              help="Maximum time the function can run, in seconds. Default: %s." % DEFAULT_TIMEOUT)
 @click.option('--role', default='lambda-basic-execution')
 def publish(description, timeout, role):
     runtime = metadata.read()['runtime']
@@ -109,6 +111,14 @@ def publish(description, timeout, role):
             description = metadata.read()['description']
         except KeyError:
             raise ClickException('Please provide a description with "--description"')
+
+    if not timeout:
+        try:
+            timeout = metadata.read()['timeout']
+        except KeyError:
+            timeout = DEFAULT_TIMEOUT
+    metadata.update(timeout=timeout)
+
     zip_data = open(create_zip()).read()
 
     if function in get_published_function_names():
