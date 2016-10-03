@@ -10,8 +10,7 @@ import sys
 from base64 import b64decode
 from botocore.exceptions import ClientError, NoRegionError
 from lambkin.aws import get_role_arn, get_event_rule_arn
-from lambkin.aws import get_function_arn
-from lambkin.exceptions import Fatal
+from lambkin.aws import get_function_arn, get_region
 from lambkin.runtime import get_sane_runtime, get_file_extension_for_runtime
 from lambkin.runtime import get_language_name_for_runtime
 from lambkin.template import render_template
@@ -21,10 +20,7 @@ from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
-try:
-    lmbda = boto3.client('lambda')
-except NoRegionError:
-    lmbda = boto3.client('lambda', region_name='us-east-1')
+lmbda = boto3.client('lambda', region_name=get_region())
 
 
 @click.command(help='Make a new Lambda function from a basic template.')
@@ -169,7 +165,7 @@ def unpublish(function):
 def schedule(function, rate):
     if not function:
         function = metadata.read()['function']
-    events = boto3.client('events')
+    events = boto3.client('events', region_name=get_region())
 
     try:
         lmbda.add_permission(

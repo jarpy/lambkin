@@ -2,8 +2,8 @@ import boto3
 
 
 def get_region():
-    """Return the (default) AWS region."""
-    return boto3.session.Session().region_name
+    """Return the configured AWS region, or "us-east-1" if undefined."""
+    return boto3.session.Session().region_name or 'us-east-1'
 
 
 def get_account_id():
