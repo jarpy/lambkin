@@ -2,26 +2,36 @@
 #
 # A quick smoke-test of Lambkin.
 #
-# Creates, publishes, runs and crons a basic function in Python and another
+# Creates, publishes, runs and schedules a basic function in Python and another
 # in Node.js.
 
 set -xeou pipefail
 
 for runtime in python node; do
-  func=${runtime}-smoketest
+  func=lambkin-${runtime}-smoketest
   lambkin list-published | grep -q ${func} && lambkin unpublish --function=${func}
   rm -rf ${func}
   lambkin create ${func} $([[ ${runtime} == python ]] || echo --runtime=${runtime})
   cd ${func}
-  echo 'requests' >> requirements.txt
+
+  [[ $runtime == python ]] && echo 'requests' > requirements.txt
   lambkin build
-  lambkin publish --description="lambkin smoketest - ${func}"
-  lambkin run | jq .
-  lambkin schedule --rate '5 minutes' | jq '{status: .ResponseMetadata.HTTPStatusCode}'
-  lambkin schedule --cron '* * * * ? *' | jq '{status: .ResponseMetadata.HTTPStatusCode}'
+
+  lambkin publish --description="Test ${runtime} function from Lambkin." | jq .
+
+  # Will it run?
+  test $(lambkin run | jq -r .hello) = "World"
+
+  # Timeout can be updated.
+  test $(lambkin publish --timeout=123 | jq -r .Timeout) -eq 123
+  # ...and the change persists
+  test $(lambkin publish | jq -r .Timeout) -eq 123
+
+  # Scheduling supports both the "rate" and "cron" syntaxes.
+  test $(lambkin schedule --rate '5 minutes' | jq -r .ResponseMetadata.HTTPStatusCode) -eq 200
+  test $(lambkin schedule --cron '* * * * ? *' | jq -r .ResponseMetadata.HTTPStatusCode) -eq 200
 
   lambkin unpublish
   cd ..
   rm -rf ${func}
-  echo
 done
