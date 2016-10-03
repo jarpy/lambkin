@@ -15,9 +15,11 @@ for runtime in python node; do
   cd ${func}
   echo 'requests' >> requirements.txt
   lambkin build
-  lambkin publish --description="${func} test."
+  lambkin publish --description="lambkin smoketest - ${func}"
   lambkin run | jq .
   lambkin schedule --rate '5 minutes' | jq '{status: .ResponseMetadata.HTTPStatusCode}'
+  lambkin schedule --cron '* * * * ? *' | jq '{status: .ResponseMetadata.HTTPStatusCode}'
+
   lambkin unpublish
   cd ..
   rm -rf ${func}

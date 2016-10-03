@@ -160,12 +160,22 @@ def unpublish(function):
 
 @click.command(help='Schedule a function to run regularly.')
 @click.option('--function', help="Defaults to the function in the current dir.")
-@click.option('--rate', required=True,
-              help='Execution rate. Like "6 minutes", or "1 day".')
-def schedule(function, rate):
+@click.option('--rate', help='Execution rate. Like "6 minutes", or "1 day".')
+@click.option('--cron', help='Cron schedule. Like "0 8 1 * ? *".')
+def schedule(function, rate, cron):
     if not function:
         function = metadata.read()['function']
     events = boto3.client('events', region_name=get_region())
+
+    if (rate and cron):
+        raise ClickException(
+            'Please use either "--rate" or "--cron", not both.')
+    if rate:
+        schedule_expression = 'rate(%s)' % rate
+    elif cron:
+        schedule_expression = 'cron(%s)' % cron
+    else:
+        raise ClickException('Please provide "--rate" or "--cron".')
 
     try:
         lmbda.add_permission(
@@ -184,7 +194,7 @@ def schedule(function, rate):
 
     events.put_rule(
         Name='lambkin-cron-%s' % function,
-        ScheduleExpression='rate(%s)' % rate,
+        ScheduleExpression=schedule_expression,
         State='ENABLED',
         Description='Lambkin cron for %s Lambda function' % function,
     )
