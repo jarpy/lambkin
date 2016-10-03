@@ -8,7 +8,7 @@ import lambkin.metadata as metadata
 
 
 def create_zip():
-    function = metadata.read()['function']
+    function = metadata.get('function')
     zip_file_path = '/tmp/lambkin-publish-%s.zip' % function
     zip_file = zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED)
 

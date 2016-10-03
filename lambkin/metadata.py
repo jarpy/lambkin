@@ -4,6 +4,11 @@ import os
 metadata_file = 'metadata.json'
 
 
+def get(k):
+    """Return a single named property from the metadata."""
+    return read()[k]
+
+
 def read():
     """Read metadata for a function from disk (metadata.json)."""
     with open(metadata_file) as f:

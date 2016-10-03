@@ -77,7 +77,7 @@ def list_published():
 
 @click.command(help="Run the build process for a function.")
 def build():
-    runtime = metadata.read()['runtime']
+    runtime = metadata.get('runtime')
     language = get_language_name_for_runtime(runtime)
     if language == 'python':
         # Use virtualenv and pip
@@ -102,19 +102,19 @@ def build():
               help="Maximum time the function can run, in seconds. Default: %s." % DEFAULT_TIMEOUT)
 @click.option('--role', default='lambda-basic-execution')
 def publish(description, timeout, role):
-    runtime = metadata.read()['runtime']
-    function = metadata.read()['function']
+    runtime = metadata.get('runtime')
+    function = metadata.get('function')
     if description:
         metadata.update(description=description)
     else:
         try:
-            description = metadata.read()['description']
+            description = metadata.get('description')
         except KeyError:
             raise ClickException('Please provide a description with "--description"')
 
     if not timeout:
         try:
-            timeout = metadata.read()['timeout']
+            timeout = metadata.get('timeout')
         except KeyError:
             timeout = DEFAULT_TIMEOUT
     metadata.update(timeout=timeout)
@@ -151,7 +151,7 @@ def publish(description, timeout, role):
 @click.option('--function', help="Defaults to the function in the current dir.")
 def run(function):
     if not function:
-        function = metadata.read()['function']
+        function = metadata.get('function')
     result = lmbda.invoke(FunctionName=function, LogType='Tail')
     log = b64decode(result['LogResult']).rstrip().split("\n")
     for line in log:
@@ -163,7 +163,7 @@ def run(function):
 @click.option('--function', help="Defaults to the function in the current dir.")
 def unpublish(function):
     if not function:
-        function = metadata.read()['function']
+        function = metadata.get('function')
     lmbda.delete_function(FunctionName=function)
     say('%s unpublished' % (function))
 
@@ -174,7 +174,7 @@ def unpublish(function):
 @click.option('--cron', help='Cron schedule. Like "0 8 1 * ? *".')
 def schedule(function, rate, cron):
     if not function:
-        function = metadata.read()['function']
+        function = metadata.get('function')
     events = boto3.client('events', region_name=get_region())
 
     if (rate and cron):
