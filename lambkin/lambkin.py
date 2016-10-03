@@ -3,12 +3,13 @@ from __future__ import absolute_import
 
 import boto3
 import click
+from click import ClickException
 import json
 import os
 import platform
 import sys
 from base64 import b64decode
-from botocore.exceptions import ClientError, NoRegionError
+from botocore.exceptions import ClientError
 from lambkin.aws import get_role_arn, get_event_rule_arn
 from lambkin.aws import get_function_arn, get_region
 from lambkin.runtime import get_sane_runtime, get_file_extension_for_runtime
@@ -35,7 +36,7 @@ def create(function, runtime):
 
     for path in (func_dir, func_file):
         if os.path.exists(path):
-            raise Fatal('Path "%s" already exists.' % path)
+            raise ClickException('Path "%s" already exists.' % path)
 
     os.mkdir(func_dir)
 
@@ -90,7 +91,7 @@ def build():
         except CalledProcessError as e:
             for line in e.output.rstrip().split("\n"):
                 say(line)
-            raise Fatal('make failure')
+            raise ClickException('make failure')
 
 
 @click.command(help='Publish a function to Lambda.')
@@ -107,8 +108,7 @@ def publish(description, timeout, role):
         try:
             description = metadata.read()['description']
         except KeyError:
-            raise Fatal('Please provide a description with "--description"')
-
+            raise ClickException('Please provide a description with "--description"')
     zip_data = open(create_zip()).read()
 
     if function in get_published_function_names():

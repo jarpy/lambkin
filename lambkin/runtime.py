@@ -1,4 +1,4 @@
-from exceptions import Fatal
+from click import ClickException
 
 
 def get_file_extension_for_runtime(runtime):
@@ -34,4 +34,4 @@ def get_sane_runtime(runtime):
     if runtime in valid_runtimes:
         return runtime
     else:
-        raise Fatal('Runtime "%s" is not supported' % runtime)
+        raise ClickException('Runtime "%s" is not supported' % runtime)
