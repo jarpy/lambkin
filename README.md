@@ -11,17 +11,15 @@ Quick Start
 
 Prerequisites
 -------------
-* A valid `~/.aws/config` file. eg.
-```
-[default]
-region = us-west-2
-```
 * A valid `~/.aws/credentials` file. eg.
 ```
 [default]
 aws_access_key_id = AKIAUAVOHGHOOWEEYIED
 aws_secret_access_key = 90kX2Y2bykTH9CpQFHCzN92tukYf26
 ```
+... or the equivalent environment variables (`AWS_ACCESS_KEY_ID` and
+`AWS_SECRET_ACCESS_KEY`).
+
 
 * A working `virtualenv` command if you will be writing Lambda functions in Python.
 

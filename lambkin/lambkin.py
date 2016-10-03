@@ -8,7 +8,7 @@ import os
 import platform
 import sys
 from base64 import b64decode
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, NoRegionError
 from lambkin.aws import get_role_arn, get_event_rule_arn
 from lambkin.aws import get_function_arn
 from lambkin.exceptions import Fatal
@@ -21,8 +21,10 @@ from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
-
-lmbda = boto3.client('lambda')
+try:
+    lmbda = boto3.client('lambda')
+except NoRegionError:
+    lmbda = boto3.client('lambda', region_name='us-east-1')
 
 
 @click.command(help='Make a new Lambda function from a basic template.')
