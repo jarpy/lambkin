@@ -1,6 +1,6 @@
 Lambkin
 =======
-Lambkin is CLI tool for generating and managing simple functions in AWS Lambda.
+Lambkin is a CLI tool for generating and managing simple functions in AWS Lambda.
 
 Supporting Node.js and Python, Lambkin generates skeleton functions, provides
 lightweight help for managing dependencies, and does its best to hide the
