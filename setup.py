@@ -9,7 +9,7 @@ except ImportError:
 setup(
     name='lambkin',
     packages=['lambkin'],
-    version='0.1.8',
+    version='0.1.9',
     description='CLI tool for managing functions in AWS Lambda.',
     long_description=long_description,
     author='Toby McLaughlin',

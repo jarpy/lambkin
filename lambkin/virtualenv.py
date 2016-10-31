@@ -1,8 +1,21 @@
-from subprocess import check_output
+import os
+from click import ClickException
+from subprocess import call, check_output
 from os.path import join
 
 
+def have_virtualenv():
+    try:
+        with open(os.devnull, 'w') as null:
+            status = call(['virtualenv', '--help'], stdout=null, stderr=null)
+        return status is 0
+    except OSError:
+        return False
+
+
 def create_virtualenv(function_name):
+    if not have_virtualenv():
+        raise ClickException('Lambkin needs virtualenv. Please install it.')
     check_output([
         'virtualenv', '--python=python2.7', join(function_name, 'venv')
     ])

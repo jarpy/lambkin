@@ -226,7 +226,7 @@ def schedule(function, rate, cron):
 
 def main():
     if platform.system() == 'Windows':
-        print("Lambkin doesn't run on Windows yet. Sorry.")
+        print "Lambkin doesn't run on Windows yet. Sorry."
         sys.exit(1)
 
     @click.group()
