@@ -99,7 +99,7 @@ def build():
 @click.option('--description', help="Descriptive text in AWS Lamda.")
 @click.option('--timeout', type=click.IntRange(min=1, max=300),
               help="Maximum time the function can run, in seconds.")
-@click.option('--role')
+@click.option('--role', help="Lambda execution role. Default: lambda_basic_execution")
 def publish(description, timeout, role):
     runtime = metadata.get('runtime')
     function = metadata.get('function')
