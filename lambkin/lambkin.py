@@ -100,7 +100,9 @@ def build():
 @click.option('--timeout', type=click.IntRange(min=1, max=300),
               help="Maximum time the function can run, in seconds.")
 @click.option('--role', help="Lambda execution role. Default: lambda_basic_execution")
-def publish(description, timeout, role):
+@click.option('--zip_file_path', help="Name of zip file that lambkin creates. Default: /tmp/lambkin-publish-<function>.zip.")
+@click.option('--zip_file_only', is_flag=True, help="Produce zip file and exit without publishing.")
+def publish(description, timeout, role, zip_file_only, zip_file_path):
     runtime = metadata.get('runtime')
     function = metadata.get('function')
 
@@ -122,7 +124,10 @@ def publish(description, timeout, role):
     else:
         role = metadata.get('role')
 
-    zip_data = open(create_zip()).read()
+    zip_data = open(create_zip(zip_file_path)).read()
+
+    if zip_file_only:
+        return
 
     if function in get_published_function_names():
         # Push the latest code to the existing function in Lambda.
