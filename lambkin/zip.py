@@ -7,9 +7,11 @@ import lambkin.metadata as metadata
 # REF: http://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html
 
 
-def create_zip():
-    function = metadata.get('function')
-    zip_file_path = '/tmp/lambkin-publish-%s.zip' % function
+def create_zip(zip_file_path):
+    if not zip_file_path:
+        function = metadata.get('function')
+        zip_file_path = '/tmp/lambkin-publish-%s.zip' % function
+
     zip_file = zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED)
 
     for root, dirs, files in os.walk('.'):
