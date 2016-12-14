@@ -21,6 +21,8 @@ from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
+VERSION = '0.2.0'
+
 lmbda = boto3.client('lambda', region_name=get_region())
 
 
@@ -234,9 +236,12 @@ def main():
         print "Lambkin doesn't run on Windows yet. Sorry."
         sys.exit(1)
 
-    @click.group()
-    def cli():
-        pass
+    @click.group(invoke_without_command=True, no_args_is_help=True)
+    @click.pass_context
+    @click.option('--version', help='Show the version.', is_flag=True)
+    def cli(ctx, version):
+        if ctx.invoked_subcommand is None and version:
+            click.echo(VERSION)
 
     subcommands = [create, list_published, build, publish, run, schedule,
                    unpublish]
