@@ -3,11 +3,8 @@ from __future__ import absolute_import
 from setuptools import setup
 from lambkin.lambkin import VERSION
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except ImportError:
-    long_description = open('README.md').read()
+import pypandoc
+long_description = pypandoc.convert('README.md', 'rst')
 
 setup(
     name='lambkin',

@@ -21,7 +21,7 @@ from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
-VERSION = '0.2.0'
+VERSION = '0.2.1'
 
 lmbda = boto3.client('lambda', region_name=get_region())
 
