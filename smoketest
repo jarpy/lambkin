@@ -29,6 +29,11 @@ for runtime in $LAMBKIN_LANGS; do
   # ...and the change persists
   test $(lambkin publish | jq -r .Timeout) -eq 123
 
+  # Memory can be updated.
+  test $(lambkin publish --memory=256 | jq -r .MemorySize) -eq 256
+  # ...and the change persists
+  test $(lambkin publish | jq -r .MemorySize) -eq 256
+
   ## Role tests are commented out, since they require manual creation of the
   ## test role to pass. Create a role called 'lambkin-smoketest' if you want
   ## to run them.

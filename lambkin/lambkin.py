@@ -21,7 +21,7 @@ from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
-VERSION = '0.2.1'
+VERSION = '0.3.0'
 
 lmbda = boto3.client('lambda', region_name=get_region())
 
@@ -101,10 +101,12 @@ def build():
 @click.option('--description', help="Descriptive text in AWS Lamda.")
 @click.option('--timeout', type=click.IntRange(min=1, max=300),
               help="Maximum time the function can run, in seconds.")
+@click.option('--memory', type=click.IntRange(min=128, max=1536),
+              help="Memory allocated to the function, in MiB.")
 @click.option('--role', help="Lambda execution role. Default: lambda_basic_execution")
 @click.option('--zip-file-path', help="Name of zip file that lambkin creates. Default: /tmp/lambkin-publish-<function>.zip.")
 @click.option('--zip-file-only', is_flag=True, help="Produce zip file and exit without publishing.")
-def publish(description, timeout, role, zip_file_only, zip_file_path):
+def publish(description, timeout, memory, role, zip_file_only, zip_file_path):
     runtime = metadata.get('runtime')
     function = metadata.get('function')
 
@@ -120,6 +122,11 @@ def publish(description, timeout, role, zip_file_only, zip_file_path):
         metadata.update(timeout=timeout)
     else:
         timeout = metadata.get('timeout')
+
+    if memory:
+        metadata.update(memory=memory)
+    else:
+        memory = metadata.get('memory')
 
     if role:
         metadata.update(role=role)
@@ -143,7 +150,8 @@ def publish(description, timeout, role, zip_file_only, zip_file_path):
             FunctionName=function,
             Description=description,
             Role=get_role_arn(role),
-            Timeout=timeout)
+            Timeout=timeout,
+            MemorySize=memory)
         say('%s updated in Lambda' % function)
     else:  # we need to explictly create the function in AWS.
         final_response = lmbda.create_function(
@@ -153,7 +161,8 @@ def publish(description, timeout, role, zip_file_only, zip_file_path):
             Role=get_role_arn(role),
             Handler='%s.handler' % function,
             Code={'ZipFile': zip_data},
-            Timeout=timeout)
+            Timeout=timeout,
+            MemorySize=memory)
         say('%s created in Lambda' % function)
     print json.dumps(final_response, sort_keys=True, indent=2)
 

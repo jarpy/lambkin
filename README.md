@@ -72,6 +72,12 @@ lambkin publish --description 'The best function ever.'
 lambkin publish --description 'Slow' --timeout=300
 ```
 
+##### Increase the memory allocation for a function
+
+``` bash
+lambkin publish --description 'Big' --memory=1024
+```
+
 ##### Invoke the published function, right now!
 
 ``` bash

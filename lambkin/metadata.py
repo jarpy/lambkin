@@ -4,6 +4,7 @@ import os
 metadata_file = 'metadata.json'
 defaults = {
     'timeout': 60,
+    'memory': 128,
     'role': 'lambda_basic_execution'
 }
 
