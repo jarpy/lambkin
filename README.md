@@ -1,5 +1,13 @@
+Deprecation Warning
+===================
+
+Lambkin was designed as a simple tool for simple tasks. Today, it's difficult to recommend
+over more functional systems such as [Serverless](https://serverless.com/) and
+[Apex](http://apex.run/). Please consider alternatives before getting too involved with Lambkin.
+
 Lambkin
 =======
+
 Lambkin is a CLI tool for generating and managing simple functions in AWS Lambda.
 
 Supporting Node.js and Python, Lambkin generates skeleton functions, provides
