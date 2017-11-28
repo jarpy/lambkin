@@ -4,14 +4,19 @@ from setuptools import setup
 from lambkin.lambkin import VERSION
 
 import pypandoc
-long_description = pypandoc.convert('README.md', 'rst')
+import os.path
+
+
+if(os.path.isfile('README.md')):
+    with open('README.rst', 'w') as rst:
+	rst.write(pypandoc.convert('README.md', 'rst', format='md'))
 
 setup(
     name='lambkin',
     packages=['lambkin'],
     version=VERSION,
     description='CLI tool for managing functions in AWS Lambda.',
-    long_description=long_description,
+    long_description=open('README.rst').read(),
     author='Toby McLaughlin',
     author_email='toby@jarpy.net',
     url='https://github.com/jarpy/lambkin',
