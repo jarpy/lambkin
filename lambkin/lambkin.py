@@ -10,6 +10,7 @@ import platform
 import sys
 from base64 import b64decode
 from botocore.exceptions import ClientError
+from botocore.config import Config
 from lambkin.aws import get_role_arn, get_event_rule_arn
 from lambkin.aws import get_function_arn, get_region
 from lambkin.runtime import get_sane_runtime, get_file_extension_for_runtime
@@ -21,7 +22,7 @@ from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
 
-VERSION = '0.3.0'
+VERSION = '0.3.1'
 
 lmbda = boto3.client('lambda', region_name=get_region())
 
@@ -170,6 +171,8 @@ def publish(description, timeout, memory, role, zip_file_only, zip_file_path):
 @click.command(help='Run a published function.')
 @click.option('--function', help="Defaults to the function in the current dir.")
 def run(function):
+    lmbda = boto3.client('lambda', region_name=get_region(),
+                         config=Config(retries={'max_attempts': 1}, read_timeout=310))
     if not function:
         function = metadata.get('function')
     result = lmbda.invoke(FunctionName=function, LogType='Tail')
