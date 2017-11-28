@@ -3,11 +3,11 @@ from __future__ import absolute_import
 from setuptools import setup
 from lambkin.lambkin import VERSION
 
-import pypandoc
 import os.path
 
 
 if(os.path.isfile('README.md')):
+    import pypandoc
     with open('README.rst', 'w') as rst:
 	rst.write(pypandoc.convert('README.md', 'rst', format='md'))
 
