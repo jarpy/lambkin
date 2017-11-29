@@ -17,12 +17,11 @@ from lambkin.runtime import get_sane_runtime, get_file_extension_for_runtime
 from lambkin.runtime import get_language_name_for_runtime
 from lambkin.template import render_template
 from lambkin.ux import say
+from lambkin.version import VERSION
 from lambkin.virtualenv import create_virtualenv, run_in_virtualenv
 from lambkin.zip import create_zip
 import lambkin.metadata as metadata
 from subprocess import check_output, CalledProcessError, STDOUT
-
-VERSION = '0.3.3'
 
 lmbda = boto3.client('lambda', region_name=get_region())
 

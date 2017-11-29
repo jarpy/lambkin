@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from setuptools import setup
-from lambkin.lambkin import VERSION
+from lambkin.version import VERSION
 
 import os.path
 
