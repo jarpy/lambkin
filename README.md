@@ -22,8 +22,8 @@ Prerequisites
 * A valid `~/.aws/credentials` file. eg.
 ```
 [default]
-aws_access_key_id = AKIAUAVOHGHOOWEEYIED
-aws_secret_access_key = 90kX2Y2bykTH9CpQFHCzN92tukYf26
+aws_access_key_id = your_access_key_id
+aws_secret_access_key = your_secret_access_key
 ```
 ... or the equivalent environment variables (`AWS_ACCESS_KEY_ID` and
 `AWS_SECRET_ACCESS_KEY`).
