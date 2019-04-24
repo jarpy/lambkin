@@ -99,7 +99,7 @@ def build():
 
 @click.command(help='Publish a function to Lambda.')
 @click.option('--description', help="Descriptive text in AWS Lamda.")
-@click.option('--timeout', type=click.IntRange(min=1, max=300),
+@click.option('--timeout', type=click.IntRange(min=1, max=900),
               help="Maximum time the function can run, in seconds.")
 @click.option('--memory', type=click.IntRange(min=128, max=1536),
               help="Memory allocated to the function, in MiB.")
